@@ -1,7 +1,8 @@
 var reg = {}; // modals stuff
 this.count = 5;
 var counter;
-var follow = false, correct = false;
+var modal1Data = {state: false, stop: false, answer: true};
+var modal2Data = {state: false, stop: false, answer: true};
 
 Game.level1 = function(game) {};
 
@@ -26,8 +27,6 @@ Game.level1.prototype = {
 		this.modal1State = false;
 		this.modal2State = false;
 		this.count = 5;
-		follow = false;
-
 
     this.blockers = this.game.add.group();
     this.blockers.enableBody = true;
@@ -77,38 +76,19 @@ Game.level1.prototype = {
 
 
     this.enemies = this.game.add.group();
-    this.enemies.agressive = false;
     this.enemy1 = this.enemies.create(1200, 0, 'veikejasAnimuotas');
-    this.game.physics.arcade.enable(this.enemy1);
-    this.enemy1.body.gravity.y = 1000;
-    this.enemy1.health = 5;
-    this.enemy1.body.collideWorldBounds = true;
-    this.enemy1.direction = 1;
-    this.enemy1.frame = 4;
-    this.enemy1.following = false;
-    this.enemy1.animations.add('left', [0, 1, 2, 3], 5, true);
-    this.enemy1.animations.add('right', [5, 6, 7, 8], 5, true);
-    this.enemy1.animations.add('punchLeft', [16, 15, 14, 13], 10, true);
-    this.enemy1.animations.add('punchRight', [9, 10, 11, 12], 10, true);
+    createEnemy(this.game, this.enemies, this.enemy1);
 
-    this.enemy1.animations.play('left');
-		this.enemy1.body.velocity.x = -5;
-		this.enemy1.direction = -1;
 
     this.enemy2 = this.enemies.create(1300, 0, 'veikejasAnimuotas');
-    this.game.physics.arcade.enable(this.enemy2);
-    this.enemy2.body.gravity.y = 1000;
-    this.enemy2.health = 5;
-    this.enemy2.body.collideWorldBounds = true;
-    this.enemy2.direction = 1;
-    this.enemy2.following = false;
-    this.enemy2.frame = 4;
-    this.enemy2.animations.add('left', [0, 1, 2, 3], 5, true);
-    this.enemy2.animations.add('right', [5, 6, 7, 8], 5, true);
-    this.enemy2.animations.add('punchLeft', [16, 15, 14, 13], 10, true);
-    this.enemy2.animations.add('punchRight', [9, 10, 11, 12], 10, true);
+    createEnemy(this.game, this.enemies, this.enemy2);
 		createModal1(this.enemy2.position.y, this.enemy2.position.x); // enemy2 modal
-    this.enemies.setAll('damage', 1);
+
+    this.enemy3 = this.enemies.create(2500, 0, 'veikejasAnimuotas');
+    createEnemy(this.game, this.enemies, this.enemy3);
+    this.enemy4 = this.enemies.create(3800, 600, 'veikejasAnimuotas');
+    createEnemy(this.game, this.enemies, this.enemy4);
+    createModal2(this.enemy4.position.y, this.enemy4.position.x);
 
     this.stulpai = this.game.add.group();
     this.stulpai.enableBody = true;
@@ -128,9 +108,11 @@ Game.level1.prototype = {
     //follow = false;
     if(this.game.time.now > this.nextFollowCheck) {
       this.nextFollowCheck += 3000;
-      console.log("ASDASDASD");
-      if(follow)
+      console.log(modal1Data.answer, modal2Data.answer);
+      if(modal1Data.answer == false || modal1Data.state == -2)
         this.followPLayer(this.player, this.enemy1, this.enemy2, this.enemies);
+      if(modal2Data.answer == false || modal2Data.state == -2)
+        this.followPLayer(this.player, this.enemy3, this.enemy4, this.enemies);
     }
     if(this.enemies.agressive)
       this.game.physics.arcade.overlap(this.enemies, this.player, this.fightHandler.bind(this));
@@ -144,7 +126,8 @@ Game.level1.prototype = {
       this.randomDirection = this.randomDirection*(-1);
     }
 
-  	this.modal1State = checkDistance(this.game, this.player, this.enemy2, "modal1", this.modal1State);
+    if(modal1Data.state != -1 || modal1Data.state != -2) modal1Data.state = checkDistance(this.game, this.player, this.enemy2, "modal1", modal1Data.state, modal1Data.answer);
+		if(modal2Data.state != -1 || modal2Data.state != -2) modal2Data.state = checkDistance(this.game, this.player, this.enemy4, "modal2", modal2Data.state, modal2Data.answer);
 
     this.player.body.velocity.x = 0;
     //Playerio ir enemy collidinimas, su ismetama funkcija oncollide
@@ -310,9 +293,11 @@ function createModal1(playerPosY, playerPosX) {
 				callback: function() {
 					console.log("nrml pacanas");
 					reg.modal.hideModal("modal1");
-					this.modal1State = true;
+					modal1Data.state = true;
+					modal1Data.answer = true;
 					this.count = 5;
-					correct = true;
+
+					modal1Data.state = -1;
 					clearInterval(counter);
 				}
 			},
@@ -324,9 +309,11 @@ function createModal1(playerPosY, playerPosX) {
 				callback: function() {
 					console.log("zopa");
 					reg.modal.hideModal("modal1");
-					this.modal1State = true;
-					//this.count = 5;
-					follow = true;
+					modal1Data.state = true;
+					modal1Data.answer = false;
+					this.count = 5;
+
+					modal1Data.state = -1;
 					clearInterval(counter);
 				}
 			},
@@ -342,26 +329,80 @@ function createModal1(playerPosY, playerPosX) {
 	});
 }
 
-function checkDistance(gameId, playerId, enemyId, dialogId, dialogState) {
+function createModal2(playerPosY, playerPosX) {
+	console.log('y %s x %s', playerPosY, playerPosX);
+	reg.modal.createModal({
+		type: 'modal2',
+		includeBackground: true,
+		backgroundOpacity: 0,
+		modalCloseOnInput: false,
+		itemsArr: [
+			{
+				type: 'image',
+				content: 'dialogBaloon1',
+				offsetY: 325,
+				offsetX: (-300 + playerPosX)
+			},
+			{
+				type: 'image',
+				content: 'choice1',
+				offsetY: 300,
+				offsetX: (-300 + playerPosX),
+				callback: function() {
+					console.log("nrml pacanas");
+					reg.modal.hideModal("modal2");
+					modal2Data.state = true;
+					modal2Data.answer = true;
+					this.count = 5;
+
+					modal2Data.state = -1;
+					clearInterval(counter);
+				}
+			},
+			{
+				type: 'image',
+				content: 'choice2',
+				offsetY: 345,
+				offsetX: (-300 + playerPosX),
+				callback: function() {
+					console.log("zopa");
+					modal2Data.state = true;
+					modal2Data.answer = false;
+					reg.modal.hideModal("modal2");
+					this.count = 5;
+
+					modal2Data.state = -1;
+					clearInterval(counter);
+				}
+			},
+			{
+				type: "text",
+				content: "5",
+				color: "0xfff",
+				offsetY: 290,
+				offsetX: (-191 + playerPosX),
+				fontSize: 24
+			}
+		]
+	});
+}
+
+function checkDistance(gameId, playerId, enemyId, dialogId, dialogState, dialogAnswer, dialogAnswer) {
 	//console.log("NaN: dialogState ", dialogState);
-	if((gameId.physics.arcade.distanceBetween(playerId, enemyId) == 100) && (dialogState == false) && (follow == false)) {
+	if((gameId.physics.arcade.distanceBetween(playerId, enemyId) == 100) && (dialogState == false)) {
 		console.log("saukiam modala");
 		var item = reg.modal.getModalItem(dialogId, 1);
 		item.y = enemyId.position.y - enemyId.height/2 - 100;
-
 		reg.modal.showModal(dialogId);
 
-		console.log("100: dialogState ", dialogState);
 		dialogState = true;
-		console.log("100: dialogState ", dialogState);
 		counter = setInterval(function() {timer(dialogId)}, 1000);
 	}
 	if((gameId.physics.arcade.distanceBetween(playerId, enemyId) > 100) && (dialogState == true)) {
 		reg.modal.hideModal(dialogId);
 		console.log("hidinam modala");
-		//dialogState = false;
-		console.log(">100: dialogState ", dialogState);
-		if(!correct) follow = true;
+    dialogAnswer = false;
+		dialogState = -2;
 		this.count = 5;
 		clearInterval(counter);
 	}
@@ -375,11 +416,25 @@ function timer(dialogId) {
 	modalCount.update();
 
 	if (this.count <= 0) {
-		console.log("vyksas");
 		clearInterval(counter); // baigesi counteris
 		reg.modal.hideModal(dialogId);
 		this.count = 5;
-		follow = true;
 	}
 	console.log(this.count);
+}
+
+
+function createEnemy(gameId, enemiesGroup, enemyId) {
+    gameId.physics.arcade.enable(enemyId);
+    enemyId.body.gravity.y = 1000;
+    enemyId.health = 5;
+    enemyId.body.collideWorldBounds = true;
+    enemyId.direction = 1;
+    enemyId.frame = 4;
+    enemyId.following = false;
+    enemyId.damage = 1;
+    enemyId.animations.add('left', [0, 1, 2, 3], 5, true);
+    enemyId.animations.add('right', [5, 6, 7, 8], 5, true);
+    enemyId.animations.add('punchLeft', [16, 15, 14, 13], 10, true);
+    enemyId.animations.add('punchRight', [9, 10, 11, 12], 10, true);
 }
