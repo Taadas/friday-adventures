@@ -18,7 +18,11 @@ Game.preloader.prototype = {
     this.game.load.image('pasirinkimasFonas','assets/pasirinkimasFonas.png');
     this.game.load.image('veikejas','assets/veikejas.png');
     this.game.load.image('punch','assets/pink.png');
-    this.load.spritesheet('veikejasAnimuotas', 'assets/veikejasAnimuotas.png', 90, 141);
+    this.game.load.image('bachuras1','assets/bachuras1.png');
+    this.game.load.image('bachuras2','assets/bachuras2.png');
+    this.game.load.image('bachuras3','assets/bachuras3.png');
+    this.load.spritesheet('veikejasAnimuotas1', 'assets/veikejasAnimuotas1.png', 90, 141);
+    this.load.spritesheet('veikejasAnimuotas2', 'assets/veikejasAnimuotas2.png', 90, 141);
     this.load.image('zenklasStotis', 'assets/zenklasStotis.png');
     this.load.image('zenklasPozemine', 'assets/zenklasPozemine.png');
     this.load.image('zenklasTraku', 'assets/zenklasTraku.png');
@@ -26,6 +30,7 @@ Game.preloader.prototype = {
     this.load.image('suoliukas', 'assets/suoliukas.png');
     this.load.image('stulpeliai', 'assets/stulpeliai.png');
     this.load.image('tuscias', 'assets/tuscias.png');
+    this.load.image('heart', 'assets/heart.png');
 
     this.load.tilemap('level1Map', 'assets/level1Map.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('level1Background','assets/level1Background.png');

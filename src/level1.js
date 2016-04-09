@@ -13,6 +13,7 @@ Game.level1.prototype = {
 
   create: function() {
     console.log('level1');
+    this.spriteNames = ['veikejasAnimuotas1', 'veikejasAnimuotas2', 'veikejasAnimuotas1'];
     this.nextPunch = 0;
     this.nextEnemyAtack = 0;
     this.punchRate = 700;
@@ -60,33 +61,34 @@ Game.level1.prototype = {
     this.blank1 = this.blanks.create(2840, 440, 'tuscias');
     this.blank2 = this.blanks.create(4720, 440, 'tuscias');
 
-    this.player = this.add.sprite(0, 0, 'veikejasAnimuotas');
+    this.player = this.add.sprite(0, 0, this.spriteNames[selectedChar]);
     this.game.physics.arcade.enable(this.player);
     this.player.body.gravity.y = 1000;
     this.player.body.collideWorldBounds = true;
     this.player.direction = 1;
     this.player.weaponEquiped = 0;
     this.player.atacked = false;
-    this.player.health = 10;
+    this.player.health = 9;
     this.player.animations.add('left', [0, 1, 2, 3], 10, true);
     this.player.animations.add('right', [5, 6, 7, 8], 10, true);
     this.player.animations.add('punchLeft', [13, 14, 15, 16], 10, true);
     this.player.animations.add('punchRight', [9, 10, 11, 12], 10, true);
     this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
 
+    this.spriteNames.splice(selectedChar, 1);
 
     this.enemies = this.game.add.group();
-    this.enemy1 = this.enemies.create(1200, 0, 'veikejasAnimuotas');
+    this.enemy1 = this.enemies.create(1200, 0, this.spriteNames[Math.round(Math.random())]);
     createEnemy(this.game, this.enemies, this.enemy1);
 
 
-    this.enemy2 = this.enemies.create(1300, 0, 'veikejasAnimuotas');
+    this.enemy2 = this.enemies.create(1300, 0, this.spriteNames[Math.round(Math.random())]);
     createEnemy(this.game, this.enemies, this.enemy2);
 		createModal1(this.enemy2.position.y, this.enemy2.position.x); // enemy2 modal
 
-    this.enemy3 = this.enemies.create(2500, 0, 'veikejasAnimuotas');
+    this.enemy3 = this.enemies.create(2500, 0, this.spriteNames[Math.round(Math.random())]);
     createEnemy(this.game, this.enemies, this.enemy3);
-    this.enemy4 = this.enemies.create(3800, 600, 'veikejasAnimuotas');
+    this.enemy4 = this.enemies.create(3800, 600, this.spriteNames[Math.round(Math.random())]);
     createEnemy(this.game, this.enemies, this.enemy4);
     createModal2(this.enemy4.position.y, this.enemy4.position.x);
 
@@ -99,6 +101,13 @@ Game.level1.prototype = {
     this.stulpai.create(this.game.world.width - 397, 438, 'stulpeliai');
     this.stulpai.create(this.game.world.width - 172, 124, 'klubas');
 
+    this.lives = this.game.add.group();
+    for(var i = 0; i < 3; i++) {
+      this.life = this.lives.create(740 + (80 * i), 20, 'heart');
+      this.life.fixedToCamera = true;
+    }
+
+
     this.cursors = this.input.keyboard.createCursorKeys();
     this.fireButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.dButton = this.input.keyboard.addKey(Phaser.Keyboard.D);
@@ -106,6 +115,7 @@ Game.level1.prototype = {
 
   update: function() {
     //follow = false;
+
     if(this.game.time.now > this.nextFollowCheck) {
       this.nextFollowCheck += 3000;
       console.log(modal1Data.answer, modal2Data.answer);
@@ -233,6 +243,10 @@ Game.level1.prototype = {
     if(this.game.time.now > this.nextEnemyAtack) {
       this.nextEnemyAtack += 1000;
       player.health -= enemy.damage;
+      if(player.health == 6 || player.health == 3 || player.health == 0) {
+        this.life = this.lives.getFirstExists(true);
+        this.life.kill();
+      }
       console.log(player.health);
       if(player.health <= 0)
         player.kill();
