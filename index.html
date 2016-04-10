@@ -14,11 +14,13 @@
     <script type="text/javascript">
       window.onload = function() {
         var game = new Phaser.Game(1000, 600, Phaser.AUTO, "mainGame");
+
         game.state.add('boot', Game.boot);
         game.state.add('preloader', Game.preloader);
         game.state.add('mainMenu', Game.mainMenu);
         game.state.add('charSelection', Game.charSelection);
         game.state.add('level1', Game.level1);
+
         game.state.start('boot');
       }
     </script>
