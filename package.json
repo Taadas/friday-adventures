@@ -1,0 +1,14 @@
+{
+  "name": "html5-game-test",
+  "version": "1.0.0",
+  "description": "testing html5 game engine",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arnas A",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}

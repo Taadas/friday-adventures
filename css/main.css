@@ -1,0 +1,11 @@
+html {
+	background-color: #000;
+	width: 100%;
+}
+#mainGame {
+	text-align: center;
+	margin: auto;
+	width: 1000px;
+	margin: auto;
+	margin-top: 30px;
+}

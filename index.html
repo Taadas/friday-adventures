@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Test Game</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="src/phaser.min.js" type="text/javascript"></script>
+    <script src="src/boot.js" type="text/javascript"></script>
+    <script src="src/preloader.js" type="text/javascript"></script>
+    <script src="src/mainMenu.js" type="text/javascript"></script>
+    <script src="src/charSelection.js" type="text/javascript"></script>
+    <script src="src/level1.js" type="text/javascript"></script>
+    <script src="src/modal/modal.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      window.onload = function() {
+        var game = new Phaser.Game(1000, 600, Phaser.AUTO, "mainGame");
+        game.state.add('boot', Game.boot);
+        game.state.add('preloader', Game.preloader);
+        game.state.add('mainMenu', Game.mainMenu);
+        game.state.add('charSelection', Game.charSelection);
+        game.state.add('level1', Game.level1);
+        game.state.start('boot');
+      }
+    </script>
+    <div id="mainGame"></div>
+  </body>
+</html>
